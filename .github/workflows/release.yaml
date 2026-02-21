@@ -1,0 +1,98 @@
+name: "Publish new release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "New version (e.g., 1.2.3)"
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: Run tests
+    uses: ./.github/workflows/test.yaml
+
+  bump-version:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - name: Install cargo-bins
+        uses: cargo-bins/cargo-binstall@main
+
+      - name: Install cargo-edit
+        run: cargo binstall cargo-edit --no-confirm
+
+      - name: Update version in package.json and Cargo.toml
+        run: |
+          npm version ${{ inputs.version }} -git-tag-version false
+          cd src-tauri && cargo set-version ${{ inputs.version }}
+
+      - name: Commit and push version bump
+        run: |
+          git config --local user.email "github-actions@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add package.json package-lock.json 
+          git add src-tauri/Cargo.toml src-tauri/Cargo.lock
+          git commit -m "Bump version to ${{ inputs.version }}"
+          git push
+
+  publish:
+    needs: bump-version
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest" # for Intel based macs.
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04"
+            args: ""
+          - platform: "windows-latest"
+            args: ""
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Build and publish
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "E2ImageLoader v__VERSION__"
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

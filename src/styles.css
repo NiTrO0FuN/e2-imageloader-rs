@@ -1,0 +1,24 @@
+/* https://coolors.co/palette/514438-9b9482-62929e-53677a-ad9caa */
+:root {
+  --primary-color: #62929e;
+  --primary-contrast-color: #53677a;
+  --secondary-color: #514438;
+  --secondary-contrast-color: #9b9482;
+  --danger-color: #bb0000;
+  --positive-color: #009900;
+
+  background-color: var(--primary-contrast-color);
+  color: white;
+  font-family:
+    Noto Sans,
+    sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+}

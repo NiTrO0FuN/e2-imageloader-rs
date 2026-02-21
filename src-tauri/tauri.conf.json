@@ -1,0 +1,36 @@
+{
+  "productName": "E2 Image Loader",
+  "identifier": "nitro0fun.e2-imageloader",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "E2 Image Loader",
+        "width": 870,
+        "height": 500,
+        "minWidth": 870,
+        "minHeight": 500
+      }
+    ],
+    "security": {
+      "csp": {
+        "img-src": "'self' asset: http://asset.localhost"
+      },
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "dmg", "appimage"],
+    "publisher": "NiTrO0FuN",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+  }
+}

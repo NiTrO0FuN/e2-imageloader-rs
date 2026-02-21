@@ -1,0 +1,5 @@
+{
+  "identifier": "store-access",
+  "windows": ["main"],
+  "permissions": ["store:allow-load", "store:allow-get", "store:allow-set", "core:event:allow-listen"]
+}

@@ -1,0 +1,92 @@
+@name E2ImageLoader
+@inputs Screen:wirelink
+@strict
+@persist Size Pixels:array Compressed:string
+@persist I Loc 
+
+function with_compression() {
+    while(perf(95)& I < Compressed:length() & Pixels:count() < Size) {
+            local N = Compressed:sub(I,I+1):toNumber(16)
+            local Color = Compressed:sub(I+2,I+7):toNumber(16)
+            for (_=1, N) {
+                Pixels:pushNumber(Color)
+            }
+            I += 8
+    }
+    if(Pixels:count()) {
+        Screen:writeArraySimple(Loc,Pixels)
+        Loc += Pixels:count()
+        Pixels = array()
+    }
+    if(I < Compressed:length()) {timer("with_compression",0)}
+}
+
+function without_compression() {
+    while(perf(95) & I < Compressed:length()) {
+        Pixels:pushNumber(Compressed:sub(I,I+5):toNumber(16))
+        I +=  6
+    }
+     if(Pixels:count()) {
+        Screen:writeArraySimple(Loc,Pixels)
+        Loc += Pixels:count()
+        Pixels = array()
+    }
+    if(I < Compressed:length()) {timer("without_compression",0)}
+}
+
+function loadFiles() {
+    fileLoad("e2imageloader/data"+I+".txt")
+}
+
+event chat(Player:entity, Message:string, Team:number) {
+    if (Player == owner() & Message == "!load") {
+        if(!->Screen) {
+            print("Please connect a Digital Screen to the input 'Screen'")
+        } else {
+            loadFiles()
+        }
+        hideChat(1)
+    }
+}
+
+event fileLoaded(FilePath:string, S:string) {
+    C = S:sub(1,1):toNumber()
+    Size = S:sub(2,4):toNumber(16)
+    NFiles = S:sub(5,6):toNumber(16)
+    Compressed += S:sub(7)
+    
+    print(100 * I / NFiles + "%")
+    if(I < NFiles - 1) {
+        I++
+        loadFiles()
+    } else {
+        I = 1
+        Loc = 0
+        Screen[1048573] = Size #width
+        Screen[1048572] = Size #height
+        Screen[1048569] = 2 #2=24-bit
+        Screen[1048574] = 1 #Clear screen
+        Screen[1048574] = 0
+        Data = array()
+        
+        if(C) {
+            with_compression()
+        } else {
+            without_compression()
+        }
+    }
+}
+
+event fileErrored(FilePath:string, Status:number) {
+    if(Status == 3) {
+        print("Error while loading the image, try reducing the chunk size")
+    }
+}
+
+if(clk("with_compression")) {
+    with_compression()
+}
+
+if(clk("without_compression")) {
+    without_compression()
+}

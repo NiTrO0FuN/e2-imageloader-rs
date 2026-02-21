@@ -1,0 +1,16 @@
+import { createApp } from "vue";
+import { createI18n } from "vue-i18n";
+import { getLocale, fallbackLocale, languages } from "./locales/i18n";
+import App from "./App.vue";
+
+const i18n = createI18n({
+  legacy: false,
+  fallbackLocale: fallbackLocale,
+  messages: languages,
+});
+
+getLocale().then((locale) => (i18n.global.locale.value = locale));
+
+const app = createApp(App);
+app.use(i18n);
+app.mount("#app");

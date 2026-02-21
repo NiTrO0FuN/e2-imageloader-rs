@@ -1,0 +1,33 @@
+{
+  "navbar": {
+    "gamePath": {
+      "success": "Garry's Mod game path choosen successfuly."
+    }
+  },
+  "sidebar": {
+    "add": "Add image(s)"
+  },
+  "image": {
+    "select": "Generate",
+    "select-success": "Image successfuly converted!",
+    "select-error": {
+      "InvalidGamePath": "Invalid game path."
+    },
+    "remove": "Remove",
+    "remove-success": "Image successfuly removed."
+  },
+  "options": {
+    "quality": {
+      "header": "Quality",
+      "low": { "name": "Low", "pixels": "(128x128)" },
+      "medium": { "name": "Medium", "pixels": "(256x256)" },
+      "high": { "name": "High", "pixels": "(512x512)" }
+    },
+    "size": {
+      "header": "Chunk size",
+      "small": "Small",
+      "medium": "Medium (recommended)",
+      "large": "Large"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "navbar": {
+    "gamePath": {
+      "success": "Chemin d'accès de Garry's Mod choisi avec succès."
+    }
+  },
+  "sidebar": {
+    "add": "Ajouter des images"
+  },
+  "image": {
+    "select": "Utiliser",
+    "select-success": "Image convertie avec succès !",
+    "select-error": {
+      "InvalidGamePath": "Chemin d'accès à Garry's Mod invalide."
+    },
+    "remove": "Retirer",
+    "remove-success": "Image retirée avec succès."
+  },
+  "options": {
+    "quality": {
+      "header": "Qualité",
+      "low": { "name": "Basse", "pixels": "(128x128)" },
+      "medium": { "name": "Moyenne", "pixels": "(256x256)" },
+      "high": { "name": "Haute", "pixels": "(512x512)" }
+    },
+    "size": {
+      "header": "Taille du bloc",
+      "small": "Petit",
+      "medium": "Moyen (recommandé)",
+      "large": "Grand"
+    }
+  }
+}
