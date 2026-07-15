@@ -13,7 +13,7 @@ import { ref, Ref, onMounted } from "vue";
 import { Store } from "@tauri-apps/plugin-store";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { process } from "../utils/processing";
-import { createToast, Toast, ToastSeverity } from "../utils/toasts";
+import { createToast, ToastSeverity } from "../utils/toasts";
 
 let images: Ref<string[]> = ref([]);
 
@@ -27,7 +27,7 @@ onMounted(async () => {
 function remove(i: number) {
   images.value.splice(i, 1);
   store.set("paths", images.value);
-  createToast(new Toast("image.remove-success", ToastSeverity.INFO));
+  createToast("image.remove-success", ToastSeverity.INFO);
 }
 </script>
 

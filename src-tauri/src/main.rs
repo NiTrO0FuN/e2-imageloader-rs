@@ -3,9 +3,12 @@
 mod compression;
 mod game_path;
 mod image_processing;
+mod watcher;
 
 use game_path::{guess_game_path, is_valid_game_path};
 use image_processing::process_image;
+
+use watcher::start_screenshots_watcher;
 
 fn main() {
     tauri::Builder::default()
@@ -15,6 +18,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![is_valid_game_path, process_image])
         .setup(|app| {
             let _ = guess_game_path(app.handle()).map_err(|_| println!("Error while trying to guess Garry's Mod path"));
+            start_screenshots_watcher(app.handle());
             Ok(())
         })
         .run(tauri::generate_context!())

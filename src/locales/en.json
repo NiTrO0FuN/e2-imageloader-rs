@@ -5,13 +5,16 @@
     }
   },
   "sidebar": {
-    "add": "Add image(s)"
+    "add": "Add image(s)",
+    "automode": "Automatic mode"
   },
   "image": {
     "select": "Generate",
     "select-success": "Image successfuly converted!",
     "select-error": {
-      "InvalidGamePath": "Invalid game path."
+      "InvalidGamePath": "Invalid game path.",
+      "ImageNotFound": "Image not found, it was probably deleted.",
+      "ImageError": "An error occurred while converting the image."
     },
     "remove": "Remove",
     "remove-success": "Image successfuly removed."
@@ -29,5 +32,11 @@
       "medium": "Medium (recommended)",
       "large": "Large"
     }
+  },
+  "automode": {
+    "on": "Automatic mode enabled, screenshots taken in-game will be automatically converted.",
+    "off": "Automatic mode disabled.",
+    "success": "Screenshot successfuly converted!",
+    "error": "An error occurred while converting the screenshot."
   }
 }

@@ -1,8 +1,9 @@
 use crate::compression;
 use crate::game_path;
 
-use image::{self, imageops::FilterType, EncodableLayout};
+use image::{imageops::FilterType, open, EncodableLayout, GenericImageView, ImageError};
 use serde::Serialize;
+use std::io;
 use std::{fs::create_dir_all, fs::File, io::Write, path::Path};
 
 #[derive(serde::Deserialize)]
@@ -44,6 +45,8 @@ impl Into<u32> for Quality {
 #[derive(Debug, Serialize)]
 pub enum Error {
     InvalidGamePath,
+    ImageNotFound,
+    ImageError,
 }
 
 #[tauri::command]
@@ -68,8 +71,20 @@ pub fn process_image(app: tauri::AppHandle, path: &Path, quality: Quality, chunk
 
     let size = quality.into();
 
-    let img = image::open(path).unwrap();
+    let img = match open(path) {
+        Ok(img) => img,
+        Err(ImageError::IoError(e)) if e.kind() == io::ErrorKind::NotFound => return Err(Error::ImageNotFound),
+        Err(_) => return Err(Error::ImageError),
+    };
+
+    // Crop to square
+    let (w, h) = img.dimensions();
+    let side = std::cmp::min(w, h);
+    let img = img.crop_imm(w / 2 - side / 2, h / 2 - side / 2, side, side);
+
+    // Resize
     let img = img.resize_exact(size, size, FilterType::Nearest);
+
     let img = img.to_rgb8();
 
     // Compress

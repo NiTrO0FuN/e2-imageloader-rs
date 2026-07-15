@@ -17,7 +17,8 @@ class Toast {
 
 const toasts: Reactive<Toast[]> = reactive([]);
 
-function createToast(toast: Toast) {
+function createToast(text: string, severity: ToastSeverity) {
+  const toast = new Toast(text, severity);
   if (toasts.length >= MAX_TOASTS) toasts.shift();
   toasts.push(toast);
 
@@ -37,4 +38,4 @@ enum ToastSeverity {
   ALERT = "alert",
 }
 
-export { createToast, removeToast, toasts, ToastSeverity, Toast };
+export { createToast, removeToast, toasts, ToastSeverity };

@@ -17,6 +17,7 @@ import { toasts, removeToast } from "../utils/toasts";
   right: 0;
   bottom: 0;
   height: 100%;
+  max-width: 50%;
   position: absolute;
   overflow: hidden;
   padding: 10px;

@@ -1,0 +1,5 @@
+{
+  "identifier": "events-access",
+  "windows": ["main"],
+  "permissions": ["core:event:default"]
+}

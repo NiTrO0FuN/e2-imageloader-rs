@@ -8,7 +8,7 @@
 import { Store } from "@tauri-apps/plugin-store";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
-import { createToast, Toast, ToastSeverity } from "../../utils/toasts";
+import { createToast, ToastSeverity } from "../../utils/toasts";
 import { ref, onMounted } from "vue";
 
 const path = ref("");
@@ -29,7 +29,7 @@ async function chooseFolder() {
   let valid = await invoke("is_valid_game_path", { path: directory });
   if (valid) {
     await store.set("gamePath", directory);
-    createToast(new Toast("navbar.gamePath.success", ToastSeverity.SUCCESS));
+    createToast("navbar.gamePath.success", ToastSeverity.SUCCESS);
   }
 }
 </script>

@@ -5,13 +5,16 @@
     }
   },
   "sidebar": {
-    "add": "Ajouter des images"
+    "add": "Ajouter des images",
+    "automode": "Mode automatique"
   },
   "image": {
     "select": "Utiliser",
     "select-success": "Image convertie avec succès !",
     "select-error": {
-      "InvalidGamePath": "Chemin d'accès à Garry's Mod invalide."
+      "InvalidGamePath": "Chemin d'accès à Garry's Mod invalide.",
+      "ImageNotFound": "L'image n'existe plus, elle a été probablement supprimée.",
+      "ImageError": "Une erreur est survenue lors de la conversion de l'image."
     },
     "remove": "Retirer",
     "remove-success": "Image retirée avec succès."
@@ -29,5 +32,11 @@
       "medium": "Moyen (recommandé)",
       "large": "Grand"
     }
+  },
+  "automode": {
+    "on": "Mode automatique activé, les screenshots pris en jeu seront automatiquement convertis.",
+    "off": "Mode automatique désactivé.",
+    "success": "Screenshot converti avec succès !",
+    "error": "Une erreur est survenue lors de la conversion du screenshot."
   }
 }

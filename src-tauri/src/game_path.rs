@@ -55,18 +55,38 @@ pub fn guess_game_path(app: &tauri::AppHandle) -> tauri_plugin_store::Result<()>
 const DATA_PATH: &str = "garrysmod/data/e2files/e2imageloader";
 
 pub fn get_game_data_path(app: tauri::AppHandle) -> Option<PathBuf> {
-    let store = app.store("settings.json");
-
-    let store = match store {
-        Ok(store) => store,
-        _ => return None,
-    };
+    let store = app.store("settings.json").ok()?;
 
     store
         .get("gamePath")
         .and_then(|path| path.as_str().map(PathBuf::from))
         .and_then(|path| is_valid_game_path(&path).then_some(path))
         .map(|path| path.join(DATA_PATH))
+}
+
+fn find_steam_root_from_game_path(path: &Path) -> Option<PathBuf> {
+    path.ancestors().find_map(|ancestor| {
+        ancestor
+            .file_name()
+            .and_then(|name| name.to_str())
+            .filter(|name| name.eq_ignore_ascii_case("steam"))
+            .map(|_| ancestor.to_path_buf())
+    })
+}
+
+pub fn get_steam_screenshots_dir(app: &tauri::AppHandle) -> Option<PathBuf> {
+    let store = app.store("settings.json").ok()?;
+    let game_path_value = store.get("gamePath")?;
+    let game_path = game_path_value.as_str()?;
+    let steam_root = find_steam_root_from_game_path(Path::new(game_path))?;
+    let userdata_dir = steam_root.join("userdata");
+
+    // Can be multiple steamd ids
+    let mut entries = fs::read_dir(&userdata_dir).ok()?;
+    let first = entries.next()?.ok()?.path();
+
+    let screenshots_path = first.join("760").join("remote").join("4000").join("screenshots");
+    screenshots_path.is_dir().then_some(screenshots_path)
 }
 
 #[tauri::command]
