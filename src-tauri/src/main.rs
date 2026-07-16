@@ -3,6 +3,7 @@
 mod compression;
 mod game_path;
 mod image_processing;
+mod options;
 mod watcher;
 
 use game_path::{guess_game_path, is_valid_game_path};

@@ -2,7 +2,7 @@
   <div class="options-container">
     <h2>{{ $t("options.quality.header") }}</h2>
     <label v-for="q in qualities">
-      <input type="radio" name="quality" :value="q.value" v-model="quality" />
+      <input type="radio" name="quality" :value="q.value" v-model="options.quality" />
       <div class="label-text">
         <span>{{ $t(q.name) }}</span>
         <span>{{ $t(q.pixels) }}</span>
@@ -11,7 +11,7 @@
     <Separator />
     <h2>{{ $t("options.size.header") }}</h2>
     <label v-for="s in file_sizes">
-      <input type="radio" name="size" :value="s.value" v-model="size" />
+      <input type="radio" name="size" :value="s.value" v-model="options.chunkSize" />
       {{ $t(s.name) }}
     </label>
   </div>
@@ -19,18 +19,18 @@
 
 <script lang="ts" setup>
 import Separator from "../Separator.vue";
-import { quality, size } from "../../store/options";
+import { Quality, ChunkSize, options } from "../../store/options";
 
 const qualities = [
-  { name: "options.quality.high.name", pixels: "options.quality.high.pixels", value: "high" },
-  { name: "options.quality.medium.name", pixels: "options.quality.medium.pixels", value: "medium" },
-  { name: "options.quality.low.name", pixels: "options.quality.low.pixels", value: "low" },
+  { name: "options.quality.high.name", pixels: "options.quality.high.pixels", value: Quality.HIGH },
+  { name: "options.quality.medium.name", pixels: "options.quality.medium.pixels", value: Quality.MEDIUM },
+  { name: "options.quality.low.name", pixels: "options.quality.low.pixels", value: Quality.LOW },
 ];
 
 const file_sizes = [
-  { name: "options.size.large", value: "large" },
-  { name: "options.size.medium", value: "medium" },
-  { name: "options.size.small", value: "small" },
+  { name: "options.size.large", value: ChunkSize.LARGE },
+  { name: "options.size.medium", value: ChunkSize.MEDIUM },
+  { name: "options.size.small", value: ChunkSize.SMALL },
 ];
 </script>
 

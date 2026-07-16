@@ -1,42 +1,36 @@
 <template>
-  <button :class="{ on: automode }" @click="toggleAutomode">{{ $t("sidebar.automode") }}</button>
+  <button :class="{ on: options.automode }" @click="toggleAutomode">{{ $t("sidebar.automode") }}</button>
 </template>
 
 <script lang="ts" setup>
 import { Event, UnlistenFn, listen } from "@tauri-apps/api/event";
-import { Store } from "@tauri-apps/plugin-store";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { options } from "../../store/options";
+import { onUnmounted, watch } from "vue";
 import { createToast, ToastSeverity } from "../../utils/toasts";
 
-const automode = ref(false);
 let unlisten: UnlistenFn | undefined;
-
-let store: Store;
-onMounted(async () => {
-  store = await Store.load("settings.json");
-  automode.value = (await store.get<boolean>("automode")) || false;
-});
 
 onUnmounted(() => {
   unlisten;
 });
 
 async function toggleAutomode() {
-  automode.value = !automode.value;
-  store.set("automode", automode.value);
-  createToast("automode." + (automode.value ? "on" : "off"), ToastSeverity.INFO);
+  options.value.automode = !options.value.automode;
+  createToast("automode." + (options.value.automode ? "on" : "off"), ToastSeverity.INFO);
 }
 
-watch(automode, async (on) => {
-  console.log(on);
-  if (unlisten) {
-    unlisten();
-    unlisten = undefined;
-  }
-  if (on) {
-    unlisten = await listen<NotificationOutcome>("automode", handleNotification);
-  }
-});
+watch(
+  () => options.value.automode,
+  async (on) => {
+    if (unlisten) {
+      unlisten();
+      unlisten = undefined;
+    }
+    if (on) {
+      unlisten = await listen<NotificationOutcome>("automode", handleNotification);
+    }
+  },
+);
 
 enum NotificationOutcome {
   SUCCESS = "success",

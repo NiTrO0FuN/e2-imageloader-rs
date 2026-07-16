@@ -1,10 +1,9 @@
 use crate::game_path::get_steam_screenshots_dir;
-use crate::image_processing::{process_image, ChunkSize, Quality};
+use crate::image_processing::process_image;
+use crate::options::get_options;
 use notify::{EventKind, RecursiveMode, Watcher};
 use std::{path::PathBuf, thread, time::Duration};
-
 use tauri::{AppHandle, Emitter};
-use tauri_plugin_store::StoreExt;
 
 pub fn start_screenshots_watcher(app: &tauri::AppHandle) {
     let Some(screenshots_path) = get_steam_screenshots_dir(&app) else {
@@ -19,24 +18,26 @@ pub fn start_screenshots_watcher(app: &tauri::AppHandle) {
 
     let app = app.clone();
     thread::spawn(move || {
-        let store = app.store("settings.json").unwrap();
-        let mut watcher = match notify::recommended_watcher(move |result: notify::Result<notify::Event>| match result {
-            Ok(event) if store.get("automode").and_then(|value| value.as_bool()).unwrap_or(false) => {
-                if !matches!(event.kind, EventKind::Create(_)) {
-                    return;
-                }
+        let mut watcher = match notify::recommended_watcher(move |result: notify::Result<notify::Event>| {
+            let options = get_options(&app);
+            match result {
+                Ok(event) if options.automode => {
+                    if !matches!(event.kind, EventKind::Create(_)) {
+                        return;
+                    }
 
-                for path in event.paths {
-                    let extension = path.extension().and_then(|ext| ext.to_str()).unwrap_or_default();
-                    if path.is_file()
-                        && (extension.eq_ignore_ascii_case("jpg") || extension.eq_ignore_ascii_case("jpeg"))
-                    {
-                        safe_process(&app, path);
+                    for path in event.paths {
+                        let extension = path.extension().and_then(|ext| ext.to_str()).unwrap_or_default();
+                        if path.is_file()
+                            && (extension.eq_ignore_ascii_case("jpg") || extension.eq_ignore_ascii_case("jpeg"))
+                        {
+                            safe_process(&app, path);
+                        }
                     }
                 }
+                Ok(_) => {}
+                Err(err) => eprintln!("Failed to watch screenshots directory: {:?}", err),
             }
-            Ok(_) => {}
-            Err(err) => eprintln!("Failed to watch screenshots directory: {:?}", err),
         }) {
             Ok(watcher) => watcher,
             Err(err) => {
@@ -59,7 +60,7 @@ pub fn start_screenshots_watcher(app: &tauri::AppHandle) {
 fn safe_process(app: &AppHandle, path: PathBuf) {
     thread::sleep(Duration::from_millis(250));
     for _ in 1..=3 {
-        match process_image(app.clone(), path.as_path(), Quality::Medium, ChunkSize::Medium) {
+        match process_image(app.clone(), path.as_path()) {
             Ok(_) => {
                 app.emit("automode", "success").unwrap();
                 return;

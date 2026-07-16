@@ -1,12 +1,12 @@
 use crate::compression;
 use crate::game_path;
-
+use crate::options::get_options;
 use image::{imageops::FilterType, open, EncodableLayout, GenericImageView, ImageError};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::io;
 use std::{fs::create_dir_all, fs::File, io::Write, path::Path};
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ChunkSize {
     Small,
@@ -24,7 +24,7 @@ impl Into<usize> for ChunkSize {
     }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Quality {
     Low,
@@ -50,11 +50,13 @@ pub enum Error {
 }
 
 #[tauri::command]
-pub fn process_image(app: tauri::AppHandle, path: &Path, quality: Quality, chunk_size: ChunkSize) -> Result<(), Error> {
-    let game_data_path = match game_path::get_game_data_path(app) {
+pub fn process_image(app: tauri::AppHandle, path: &Path) -> Result<(), Error> {
+    let game_data_path = match game_path::get_game_data_path(&app) {
         Some(path) => path,
         _ => return Err(Error::InvalidGamePath),
     };
+
+    let options = get_options(&app);
 
     create_dir_all(&game_data_path).map_err(|_| Error::InvalidGamePath)?;
     for entry in std::fs::read_dir(&game_data_path).map_err(|_| Error::InvalidGamePath)? {
@@ -69,7 +71,7 @@ pub fn process_image(app: tauri::AppHandle, path: &Path, quality: Quality, chunk
         }
     }
 
-    let size = quality.into();
+    let size = options.quality.into();
 
     let img = match open(path) {
         Ok(img) => img,
@@ -95,7 +97,7 @@ pub fn process_image(app: tauri::AppHandle, path: &Path, quality: Quality, chunk
 
     let hex_string: String = to_save.iter().map(|b| format!("{:02X}", b)).collect();
 
-    let chunks = hex_string.as_bytes().chunks(chunk_size.into());
+    let chunks = hex_string.as_bytes().chunks(options.chunk_size.into());
     let n: usize = chunks.len();
 
     for (i, chunk) in chunks.enumerate() {

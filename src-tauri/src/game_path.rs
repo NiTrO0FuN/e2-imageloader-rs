@@ -54,7 +54,7 @@ pub fn guess_game_path(app: &tauri::AppHandle) -> tauri_plugin_store::Result<()>
 
 const DATA_PATH: &str = "garrysmod/data/e2files/e2imageloader";
 
-pub fn get_game_data_path(app: tauri::AppHandle) -> Option<PathBuf> {
+pub fn get_game_data_path(app: &tauri::AppHandle) -> Option<PathBuf> {
     let store = app.store("settings.json").ok()?;
 
     store
