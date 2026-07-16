@@ -1,8 +1,9 @@
 @name E2ImageLoader
-@inputs Screen:wirelink
+@inputs DigitalScreen:wirelink
 @strict
 @persist Size Pixels:array Compressed:string
 @persist I Loc 
+@persist Screen:wirelink
 
 function with_compression() {
     while(perf(95)& I < Compressed:length() & Pixels:count() < Size) {
@@ -39,13 +40,33 @@ function loadFiles() {
 }
 
 event chat(Player:entity, Message:string, Team:number) {
-    if (Player == owner() & Message == "!load") {
-        if(!->Screen) {
-            print("Please connect a Digital Screen to the input 'Screen'")
-        } else {
-            loadFiles()
+    if (Player == owner()) {
+        if(Message == "!load") {
+            if(!->DigitalScreen) {
+            print("Please connect a Digital Screen to the input 'DigitalScreen'")
+            } else {
+                I = 0
+                Compressed = ""
+                Screen = DigitalScreen
+                loadFiles()
+                hideChat(1)
+            }  
+        } elseif(Message == "!autoload") {
+            #ifdef entity:wirelink()
+                local Aim = owner():aimEntity()
+                if(Aim:isValid() & Aim:type() == "gmod_wire_digitalscreen" & Aim:owner() == owner()) {
+                    Screen = Aim:wirelink()
+                    I = 0
+                    Compressed = ""
+                    loadFiles()
+                } else {
+                    print("No owned digital screen found in the aim direction")
+                }
+            #else
+                print("Automatic screen connection is not supported on this server")
+            #endif
+            hideChat(1)
         }
-        hideChat(1)
     }
 }
 
@@ -67,7 +88,6 @@ event fileLoaded(FilePath:string, S:string) {
         Screen[1048569] = 2 #2=24-bit
         Screen[1048574] = 1 #Clear screen
         Screen[1048574] = 0
-        Data = array()
         
         if(C) {
             with_compression()

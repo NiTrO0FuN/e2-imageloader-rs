@@ -34,11 +34,14 @@ A desktop application that converts images into a format compatible with Garry's
 4. **Generate**
    - Click the "Generate" button on your selected image
 
+5. **Automatic mode**
+   - Enable this mode to automatically convert screenshots taken in-game, this will use the same options as the regular "Generate"
+
 ### In Garry's Mod
 
 1. Copy the [E2 script](src/assets/e2-imageloader.txt)
 2. Create a new E2 chip in Garry's Mod
 3. Paste the script code
 4. Click upload
-5. Connect a Digital Screen to the "Screen" input
-6. Run the command `!load` in chat to load and display the image
+5. - Connect a Digital Screen to the "DigitalScreen" input and run the command `!load` in chat to load and display the image
+   - Run the command `!autoload` in chat to automatically load the image on the digital screen you are looking at
