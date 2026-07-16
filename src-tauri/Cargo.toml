@@ -1,6 +1,6 @@
 [package]
 name = "e2-imageloader"
-version = "1.0.0"
+version = "1.1.0"
 description = "E2 image loader"
 authors = ["NiTrO0FuN"]
 edition = "2021"
